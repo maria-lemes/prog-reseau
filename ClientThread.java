@@ -20,7 +20,6 @@ public class ClientThread extends Thread {
             BufferedReader socIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintStream socOut = new PrintStream(clientSocket.getOutputStream());
 
-            System.out.println("Client started ... ");
             while (true) {
                 String line = socIn.readLine();
                 if (line.startsWith("<validate-user:")) {
