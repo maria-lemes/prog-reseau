@@ -33,8 +33,7 @@ public class ClientThreadSend
             while (true) {
                 System.out.print("User: ");
                 String user = stdIn.readLine();
-                if (".".equals(user)) break;
-                else if (!"".equals(user)) {
+                if (!"".equals(user)) {
                     validateUser(user, socOut);
                     break;
                 }
