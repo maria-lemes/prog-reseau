@@ -62,6 +62,7 @@ public class EchoServerMultiThreaded {
     }
 
     public void createGroup(String name, ArrayList<String> users) {
+        System.out.println("Creating group");
         ArrayList<Socket> sUsers = new ArrayList<>();
         for(String u : users){
             sUsers.add(this.users.get(u));
