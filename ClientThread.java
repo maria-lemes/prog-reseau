@@ -34,7 +34,10 @@ public class ClientThread extends Thread {
                 }else if(line.startsWith("<participant:")) {
                     participants.add(line.substring(13, line.length() - 1));
                 }else if(line.startsWith("<done")){
+                    participants.add(this.user);
                     EchoServerMultiThreaded.createGroup(groupName,participants);
+                }else if(line.startsWith("<send-group-message")){
+
                 }else{
                     String message = "Message from " + user + ": " + line;
                     System.out.println(message);
