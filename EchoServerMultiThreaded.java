@@ -70,4 +70,19 @@ public class EchoServerMultiThreaded {
         System.out.println("Group created : " + usersList);
         System.out.println("Groups list : " + groups);
     }
+
+    public static void sendGroupMessage(String message, Socket sender, String group){
+        System.out.println(group);
+        for (Socket s : groups.get(group)) {
+            if (!s.equals(sender)) {
+                try {
+                    PrintStream socOut = new PrintStream(s.getOutputStream());
+                    socOut.println(message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 }

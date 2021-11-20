@@ -11,6 +11,7 @@ public class ClientThread extends Thread {
     private String user = "unknown";
     ArrayList<String> participants = new ArrayList();
     private String groupName;
+    private String group;
 
     public ClientThread(Socket socketClient) {
         this.clientSocket = socketClient;
@@ -36,8 +37,12 @@ public class ClientThread extends Thread {
                 }else if(line.startsWith("<done")){
                     participants.add(this.user);
                     EchoServerMultiThreaded.createGroup(groupName,participants);
-                }else if(line.startsWith("<send-group-message")){
-
+                }else if(line.startsWith("<send-group-message-to:")){
+                    group = line.substring(24, line.length() - 1);
+                }else if(line.startsWith("<group-message:")) {
+                    String message =  "Message from " + user + " at "+ group +": "+ line.substring(15, line.length() - 1);
+                    System.out.println(message);
+                    EchoServerMultiThreaded.sendGroupMessage(message, clientSocket, group);
                 }else{
                     String message = "Message from " + user + ": " + line;
                     System.out.println(message);

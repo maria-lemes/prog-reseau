@@ -52,7 +52,7 @@ public class ClientThreadSend
                         createGroup(stdIn,socOut);
                         break;
                     case "3":
-                        //groupMessage();
+                        groupMessage(stdIn,socOut);
                         break;
                     default: break;
                 }
@@ -89,7 +89,7 @@ public class ClientThreadSend
         socOut.println("<group-name:"+name+">");
 
         while (true) {
-            System.out.print("Enter the name of a participant\n");
+            System.out.print("Enter the name of a participant or 'done'\n");
             String line = stdIn.readLine();
             if ("done".equals(line)){
                 socOut.println("<done>");
@@ -97,6 +97,18 @@ public class ClientThreadSend
             }else {
                 socOut.println("<participant:" + line + ">");
             }
+        }
+    }
+
+    private static void groupMessage(BufferedReader stdIn, PrintStream socOut) throws IOException {
+        System.out.print("Enter the group name");
+        String name = stdIn.readLine();
+        socOut.println("<send-group-message-to:"+name+">");
+
+        while (true) {
+            String line = stdIn.readLine();
+            if (".".equals(line)) break;
+            socOut.println("<group-message:"+line+">");
         }
     }
 }
