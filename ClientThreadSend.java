@@ -76,11 +76,14 @@ public class ClientThreadSend
     }
 
     private static void sendMessage(BufferedReader stdIn, PrintStream socOut) throws IOException {
-        while (true) {
-            String line = stdIn.readLine();
-            if (".".equals(line)) break;
-            socOut.println(line);
-        }
+            System.out.print("Enter recipient's username");
+            String name = stdIn.readLine();
+            socOut.println("<recipient-name:"+name+">");
+            while(true) {
+                String line = stdIn.readLine();
+                if (".".equals(line)) break;
+                socOut.println("<message:"+line+">");
+            }
     }
 
     private static void createGroup(BufferedReader stdIn, PrintStream socOut) throws IOException {

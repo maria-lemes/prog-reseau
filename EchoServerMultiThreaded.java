@@ -85,4 +85,14 @@ public class EchoServerMultiThreaded {
         }
 
     }
+
+    public static void sendPrivateMessage(String message, String recipient){
+       try{
+           PrintStream socOut = new PrintStream(users.get(recipient).getOutputStream());
+           socOut.println(message);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+    }
+
 }

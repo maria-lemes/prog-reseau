@@ -1,1 +1,3 @@
-1. Menu com send private message, create group, send message to group (mostra lista dos grupos que vc faz parte)
+1.  send message to group (mostra lista dos grupos que vc faz parte)
+2. historique des messages
+3. verificar casos null
