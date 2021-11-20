@@ -5,18 +5,13 @@ import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.lang.model.util.ElementScanner8;
-
 public class ClientThread extends Thread {
 
     private Socket clientSocket;
-    private ArrayList<Socket> users;
-    private ArrayList<String> usernames;
+    private String user = "unknown";
 
-    public ClientThread(Socket socketClient, ArrayList<Socket> users, ArrayList<String> usernames) {
+    public ClientThread(Socket socketClient) {
         this.clientSocket = socketClient;
-        this.users = users;
-        this.usernames = usernames;
     }
 
     public void run() {
@@ -25,21 +20,18 @@ public class ClientThread extends Thread {
             BufferedReader socIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintStream socOut = new PrintStream(clientSocket.getOutputStream());
 
+            System.out.println("Client started ... ");
             while (true) {
                 String line = socIn.readLine();
                 if (line.startsWith("<validate-user:")) {
                     String user = line.substring(15, line.length() - 1);
-                    if (usernames.contains(user)) {
-                        System.out.println("User " + user + " connected");
-                        socOut.println("<validate-user:t>");
-                    } else {
-                        System.out.println("User " + user + " doesn't exist");
-                        socOut.println("<validate-user:f>");
-                    }
+                    EchoServerMultiThreaded.getUsers().put(clientSocket, user);
+                    this.user = user;
+                    System.out.println("User " + user + " connected");
                 } else {
-                    System.out.println("Message received: " + line);
-                    socOut.println("Server responded: " + line);
-                    EchoServerMultiThreaded.diffuseMessage(line, clientSocket, users);
+                    String message = "Message from " + user + ": " + line;
+                    System.out.println(message);
+                    EchoServerMultiThreaded.diffuseMessage(message, clientSocket);
                 }
             
             }

@@ -7,15 +7,17 @@
  */
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.*;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class EchoServerMultiThreaded {
 
-    public static ArrayList<Socket> users = new ArrayList<>();
+    private static Map<Socket, String> users = new HashMap<>();
+
+    public static Map<Socket, String> getUsers() { return users; }
+    public static void addUser(Socket socket, String username) { users.put(socket, username); }
 
     /**
      * main method
@@ -36,8 +38,7 @@ public class EchoServerMultiThreaded {
 
             while (true) {
                 Socket clientSocket = listenSocket.accept();
-                ClientThread ct = new ClientThread(clientSocket, users, usernames);
-                users.add(clientSocket);
+                ClientThread ct = new ClientThread(clientSocket);
                 System.out.println(users);
                 ct.start();
 
@@ -47,9 +48,9 @@ public class EchoServerMultiThreaded {
         }
     }
 
-    protected static void diffuseMessage(String message, Socket sender ,ArrayList<Socket> users) {
-        System.out.println("Diffusing message to " + users.size() + " users.");
-        for (Socket s : users) {
+    protected static void diffuseMessage(String message, Socket sender) {
+        System.out.println("Diffusing message to " + (getUsers().size() - 1) + " users.");
+        for (Socket s : getUsers().keySet()) {
             if (!s.equals(sender)) {
                 try {
                     PrintStream socOut = new PrintStream(s.getOutputStream());

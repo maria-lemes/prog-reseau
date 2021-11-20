@@ -25,9 +25,20 @@ public class ClientThreadSend
     public void run() {
         BufferedReader stdIn = null;
         PrintStream socOut = null;
+
         try {
             stdIn = new BufferedReader(new InputStreamReader(System.in));
             socOut = new PrintStream(clientSocket.getOutputStream());
+
+            while (true) {
+                System.out.print("User: ");
+                String user = stdIn.readLine();
+                if (".".equals(user)) break;
+                else if (!"".equals(user)) {
+                    validateUser(user, socOut);
+                    break;
+                }
+            }
     
             while (true) {
                 String line = stdIn.readLine();
@@ -40,6 +51,14 @@ public class ClientThreadSend
             
         } catch (Exception e) {
             System.err.println("Error in EchoServer:" + e);
+        }
+    }
+
+    private static void validateUser(String user, PrintStream socOut) {
+        try {
+            socOut.println("<validate-user:" + user + ">");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

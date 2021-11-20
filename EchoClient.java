@@ -30,18 +30,6 @@ public class EchoClient {
         try {
             // creation socket ==> connexion
             echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
-
-            while (true) {
-                System.out.print("User: ");
-                String user = stdIn.readLine();
-                if (".".equals(user)) break;
-                else if (validateUser(user, echoSocket)) {
-                    System.out.println("User connected");
-                    break;
-                }
-                System.out.println("User doesn't exist");
-            }
-
             ClientThreadSend cts = new ClientThreadSend(echoSocket);
             ClientThreadReceive ctr = new ClientThreadReceive(echoSocket);
             cts.start();
@@ -55,27 +43,6 @@ public class EchoClient {
             System.exit(1);
         }
 
-    }
-
-    private static boolean validateUser(String user, Socket socket) {
-        boolean valid = true;
-        try {
-            PrintStream socOut = new PrintStream(socket.getOutputStream());
-            BufferedReader socIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            // Send validate request to server
-            socOut.println("<validate-user:" + user + ">");
-            String serverResponse;
-
-            while (!(serverResponse = socIn.readLine()).startsWith("<validate-user:")) 
-
-            if (serverResponse.substring(16, 17).equals("t")) valid = true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return valid;
     }
 
 }
