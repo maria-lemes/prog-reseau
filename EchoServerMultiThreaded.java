@@ -14,10 +14,10 @@ import java.util.Map;
 
 public class EchoServerMultiThreaded {
 
-    private static Map<Socket, String> users = new HashMap<>();
+    private static Map<String, Socket> users = new HashMap<>();
 
-    public static Map<Socket, String> getUsers() { return users; }
-    public static void addUser(Socket socket, String username) { users.put(socket, username); }
+    public static Map<String, Socket> getUsers() { return users; }
+    public static void addUser(String username, Socket socket) { users.put(username, socket); }
 
     /**
      * main method
@@ -48,7 +48,7 @@ public class EchoServerMultiThreaded {
 
     protected static void diffuseMessage(String message, Socket sender) {
         System.out.println("Diffusing message to " + (getUsers().size() - 1) + " users.");
-        for (Socket s : getUsers().keySet()) {
+        for (Socket s : getUsers().values()) {
             if (!s.equals(sender)) {
                 try {
                     PrintStream socOut = new PrintStream(s.getOutputStream());
