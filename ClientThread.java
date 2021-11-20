@@ -9,6 +9,8 @@ public class ClientThread extends Thread {
 
     private Socket clientSocket;
     private String user = "unknown";
+    ArrayList<String> participants = new ArrayList();
+    private String groupName;
 
     public ClientThread(Socket socketClient) {
         this.clientSocket = socketClient;
@@ -27,7 +29,13 @@ public class ClientThread extends Thread {
                     EchoServerMultiThreaded.getUsers().put(user, clientSocket);
                     this.user = user;
                     System.out.println("User " + user + " connected");
-                } else {
+                }else if(line.startsWith("<group-name:")) {
+                    groupName = line.substring(13, line.length() - 1);
+                }else if(line.startsWith("<participant:")) {
+                    participants.add(line.substring(13, line.length() - 1));
+                }else if(line.startsWith("<done")){
+                    EchoServerMultiThreaded.createGroup(groupName,participants);
+                }else{
                     String message = "Message from " + user + ": " + line;
                     System.out.println(message);
                     EchoServerMultiThreaded.diffuseMessage(message, clientSocket);

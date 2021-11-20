@@ -56,7 +56,7 @@ public class ClientThreadSend
                         break;
                     default: break;
                 }
-                break;
+                if(option.equals(".")) break;
             }
 
             if (stdIn != null) stdIn.close();
@@ -89,10 +89,14 @@ public class ClientThreadSend
         socOut.println("<group-name:"+name+">");
 
         while (true) {
-            System.out.print("Enter the name of a participant");
+            System.out.print("Enter the name of a participant\n");
             String line = stdIn.readLine();
-            if (".".equals(line)) break;
-            socOut.println("<participant:"+line+">");
+            if ("done".equals(line)){
+                socOut.println("<done>");
+                break;
+            }else {
+                socOut.println("<participant:" + line + ">");
+            }
         }
     }
 }

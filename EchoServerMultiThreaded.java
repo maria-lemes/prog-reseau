@@ -43,7 +43,7 @@ public class EchoServerMultiThreaded {
 
             }
         } catch (Exception e) {
-            System.err.println("Error in EchoServer:" + e);
+            System.err.println("Error in EchoServerMultiThreaded:" + e);
         }
     }
 
@@ -61,12 +61,13 @@ public class EchoServerMultiThreaded {
         }
     }
 
-    public void createGroup(String name, ArrayList<String> users) {
-        System.out.println("Creating group");
+    public static void createGroup(String name, ArrayList<String> usersList) {
         ArrayList<Socket> sUsers = new ArrayList<>();
-        for(String u : users){
-            sUsers.add(this.users.get(u));
+        for(String u : usersList){
+            sUsers.add(users.get(u));
         }
         groups.put(name,sUsers);
+        System.out.println("Group created : " + usersList);
+        System.out.println("Groups list : " + groups);
     }
 }
