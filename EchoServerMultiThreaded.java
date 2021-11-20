@@ -23,6 +23,8 @@ public class EchoServerMultiThreaded {
     public static void main(String args[]) {
 
         ServerSocket listenSocket;
+        ArrayList<String> usernames = new ArrayList<>();
+        usernames.add("gus");
 
         if (args.length != 1) {
             System.out.println("Usage: java EchoServer <EchoServer port>");
@@ -34,7 +36,7 @@ public class EchoServerMultiThreaded {
 
             while (true) {
                 Socket clientSocket = listenSocket.accept();
-                ClientThread ct = new ClientThread(clientSocket, users);
+                ClientThread ct = new ClientThread(clientSocket, users, usernames);
                 users.add(clientSocket);
                 System.out.println(users);
                 ct.start();

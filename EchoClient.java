@@ -71,14 +71,11 @@ public class EchoClient {
 
             if (serverResponse.substring(16, 17).equals("t")) valid = true;
 
-            socOut.close();
-            socIn.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return true;
+        return valid;
     }
 
 }
