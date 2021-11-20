@@ -20,7 +20,6 @@ public class ClientThreadSend
     /**
      * receives a request from client then sends an echo to the client
      *
-     * @param clientSocket the client socket
      **/
     public void run() {
         BufferedReader stdIn = null;
@@ -38,11 +37,26 @@ public class ClientThreadSend
                     break;
                 }
             }
-    
+
             while (true) {
-                String line = stdIn.readLine();
-                if (".".equals(line)) break;
-                socOut.println(line);
+                System.out.print("Menu: \n" +
+                        "\t1- Send private message\n" +
+                        "\t2- Create group chat\n"+
+                        "\t3- Send message to a group chat\n");
+                String option = stdIn.readLine();
+                switch (option){
+                    case "1":
+                        sendMessage(stdIn,socOut);
+                        break;
+                    case "2":
+                        createGroup(stdIn,socOut);
+                        break;
+                    case "3":
+                        //groupMessage();
+                        break;
+                    default: break;
+                }
+                break;
             }
 
             if (stdIn != null) stdIn.close();
@@ -58,6 +72,27 @@ public class ClientThreadSend
             socOut.println("<validate-user:" + user + ">");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void sendMessage(BufferedReader stdIn, PrintStream socOut) throws IOException {
+        while (true) {
+            String line = stdIn.readLine();
+            if (".".equals(line)) break;
+            socOut.println(line);
+        }
+    }
+
+    private static void createGroup(BufferedReader stdIn, PrintStream socOut) throws IOException {
+        System.out.print("Enter the group name");
+        String name = stdIn.readLine();
+        socOut.println("<group-name:"+name+">");
+
+        while (true) {
+            System.out.print("Enter the name of a participant");
+            String line = stdIn.readLine();
+            if (".".equals(line)) break;
+            socOut.println("<participant:"+line+">");
         }
     }
 }

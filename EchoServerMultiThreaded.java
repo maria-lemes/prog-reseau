@@ -18,6 +18,7 @@ public class EchoServerMultiThreaded {
 
     public static Map<String, Socket> getUsers() { return users; }
     public static void addUser(String username, Socket socket) { users.put(username, socket); }
+    public static HashMap<String,ArrayList<Socket>> groups = new HashMap<>();
 
     /**
      * main method
@@ -58,5 +59,13 @@ public class EchoServerMultiThreaded {
                 }
             }
         }
+    }
+
+    public void createGroup(String name, ArrayList<String> users) {
+        ArrayList<Socket> sUsers = new ArrayList<>();
+        for(String u : users){
+            sUsers.add(this.users.get(u));
+        }
+        groups.put(name,sUsers);
     }
 }
