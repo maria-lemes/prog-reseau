@@ -10,17 +10,10 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
+
 public class EchoClient {
 
-    private static BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-
-    /**
-     * main method accepts a connection, receives a message from client then sends
-     * an echo to the client
-     **/
     public static void main(String[] args) throws IOException {
-
-        Socket echoSocket = null;
 
         if (args.length != 2) {
             System.out.println("Usage: java EchoClient <EchoServer host> <EchoServer port>");
@@ -28,12 +21,15 @@ public class EchoClient {
         }
 
         try {
-            // creation socket ==> connexion
-            echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
-            ClientThreadSend cts = new ClientThreadSend(echoSocket);
-            ClientThreadReceive ctr = new ClientThreadReceive(echoSocket);
-            cts.start();
-            ctr.start();
+            //Data declaration
+            ArrayList<String> myGroups;
+            final String ip = args[0];
+            final int port = Integer.parseInt(args[1]);
+
+            //Connection setup
+            Socket echoSocket = new Socket(ip, port);
+            ClientThreadController ctc = new ClientThreadController(echoSocket);
+
 
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host:" + args[0]);
@@ -42,7 +38,5 @@ public class EchoClient {
             System.err.println("Couldn't get I/O for " + "the connection to:" + args[0]);
             System.exit(1);
         }
-
     }
-
 }
