@@ -42,7 +42,9 @@ public class ClientThreadSend
                 System.out.print("Menu: \n" +
                         "\t1- Send private message\n" +
                         "\t2- Create group chat\n"+
-                        "\t3- Send message to a group chat\n");
+                        "\t3- Send message to a group chat\n"+
+                        "\t0- Exit\n");
+
                 String option = stdIn.readLine();
                 switch (option){
                     case "1":
@@ -54,13 +56,16 @@ public class ClientThreadSend
                     case "3":
                         groupMessage(stdIn,socOut);
                         break;
+                    case "0":
+                        closeConnection(socOut);
+                        return;
                     default: break;
                 }
-                if(option.equals(".")) break;
+                //if(option.equals(".")) break;
             }
 
-            if (stdIn != null) stdIn.close();
-            if (socOut != null) socOut.close();
+            //if (stdIn != null) stdIn.close();
+            //if (socOut != null) socOut.close();
             
         } catch (Exception e) {
             System.err.println("Error in ClientThreadSend:" + e);
@@ -113,6 +118,12 @@ public class ClientThreadSend
             if (".".equals(line)) break;
             socOut.println("<group-message:"+line+">");
         }
+    }
+
+    private void closeConnection( PrintStream socOut) throws IOException {
+        socOut.println("<disconnect>");
+        clientSocket.close();
+        System.exit(0);
     }
 }
 

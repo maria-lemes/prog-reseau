@@ -35,6 +35,7 @@ public class ClientThread extends Thread {
                     EchoServerMultiThreaded.getUsers().put(user, clientSocket);
                     this.user = user;
                     System.out.println("User " + user + " connected");
+                    EchoServerMultiThreaded.showHistory(user);
                 }else if(line.startsWith("<group-name:")) {
                     groupName = line.substring(13, line.length() - 1);
                 }else if(line.startsWith("<participant:")) {
@@ -54,6 +55,9 @@ public class ClientThread extends Thread {
                     String message = "Message from " + user + ": " + line.substring(9, line.length() - 1);
                     System.out.println(message);
                     EchoServerMultiThreaded.sendPrivateMessage(message, recipient, user);
+                } else if(line.startsWith("<disconnect")) {
+                    EchoServerMultiThreaded.disconectUser(user);
+                    break;
                 }
             
             }
