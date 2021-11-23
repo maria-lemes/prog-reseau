@@ -10,9 +10,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class EchoServerMultiThreaded {
 
@@ -23,6 +21,7 @@ public class EchoServerMultiThreaded {
     public static HashMap<String,ArrayList<String>> groups = new HashMap<>();
     //history: <user,<sender,messageRecord>>
     public static Map<String,Map<String,ArrayList<String>>> offlineHistory = new HashMap<>();
+    public static Map<String, Set<String>> privateChats = new HashMap<>();
 
     /**
      * main method
@@ -72,7 +71,7 @@ public class EchoServerMultiThreaded {
         System.out.println("Groups list : " + groups);
     }
 
-    public synchronized static void sendGroupMessage(String message, String sender, String group){
+    public synchronized static void sendGroupMessage(String message, String sender, String group) throws IOException {
         System.out.println(group);
         if(groups.get(group) != null) {
             for (String user : groups.get(group)) {
@@ -84,13 +83,13 @@ public class EchoServerMultiThreaded {
                         }else{
                             PrintStream socOut = new PrintStream(users.get(user).getOutputStream());
                             socOut.println(message);
-                            //addToOfflineHistory(user, message, group);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
+            saveFullHistory(group,message);
         } else{
             //TODO: podemos affichar uma lista dos grupos aos quais o user pertence
             try {
@@ -104,42 +103,58 @@ public class EchoServerMultiThreaded {
     }
 
     public synchronized static void sendPrivateMessage(String message, String receiver, String sender){
+        String chatName;
        try{
            if (!users.containsKey(receiver)) {
                PrintStream socOut = new PrintStream(users.get(sender).getOutputStream());
                socOut.println("This user doesn't exist");
-           } else if(users.get(receiver)  == null ){
-               //si l'utilisateur n'est pas enligne
-               PrintStream socOut = new PrintStream(users.get(sender).getOutputStream());
-               socOut.println("This user is offline");
-               addToOfflineHistory(receiver, message, sender);
-           }else{
-               PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
-               socOut.println(message);
-               //addToOfflineHistory(receiver, message, sender);
+           } else {
+               if (users.get(receiver) == null) {
+                   //si l'utilisateur n'est pas enligne
+                   PrintStream socOut = new PrintStream(users.get(sender).getOutputStream());
+                   socOut.println("This user is offline");
+                   addToOfflineHistory(receiver, message, sender);
+               } else {
+                   PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
+                   socOut.println(message);
+               }
+               //création une conversation privée avec un nom pour sauvegarder l'historique
+               if(privateChats.containsKey(receiver+"-"+sender)){
+                   chatName = receiver+"-"+sender;
+               }else if(privateChats.containsKey(sender+"-"+receiver)){
+                   chatName = sender+"-"+receiver;
+               }else{
+                   Set<String> privateChat = new HashSet<String>();
+                   privateChat.add(receiver);
+                   privateChat.add(sender);
+                   privateChats.put(receiver+"-"+sender,privateChat);
+                   chatName = receiver+"-"+sender;
+               }
+               saveFullHistory(chatName,message);
            }
+
        } catch (Exception e) {
            e.printStackTrace();
        }
     }
 
     public synchronized static void addToOfflineHistory(String receiver, String message, String conversation) throws IOException {
-        boolean isNewConversation;
+
         if(offlineHistory.get(receiver) == null){
             Map<String, ArrayList<String>> convRecord = new HashMap<>();
             ArrayList<String> messageRecord = new ArrayList<>();
             messageRecord.add(message);
             convRecord.put(conversation,messageRecord);
             offlineHistory.put(receiver,convRecord);
-            isNewConversation = true;
+
         }else if(offlineHistory.get(receiver).get(conversation) == null){
             ArrayList<String> messageRecord = new ArrayList<>();
             messageRecord.add(message);
             offlineHistory.get(receiver).put(conversation,messageRecord);
-            isNewConversation = true;
+
         }else{
             offlineHistory.get(receiver).get(conversation).add(message);
-            isNewConversation = false;
+
         }
 
         saveOfflineHistory(receiver);
@@ -197,6 +212,8 @@ public class EchoServerMultiThreaded {
                     }
                    content = content + "-----------------\n";
                 }
+        }else{
+            content = "You don't have new messages";
         }
         FileWriter fw = new FileWriter(user+".txt", false); //le fichier sera toujours réécrit
         BufferedWriter bw = new BufferedWriter(fw);
@@ -206,15 +223,43 @@ public class EchoServerMultiThreaded {
 
     }
 
-    //TODO: check if fichier exists
-    //metodo usado para checar full history na vdd
-    public synchronized static void checkHistory(String receiver, String sender) throws IOException {
-        String content = Files.readString(Path.of(receiver+"-"+sender + ".txt"));
-        if(content != null) {
-            PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
-            socOut.println(content);
+
+    public synchronized static void saveFullHistory(String conversation,String message) throws IOException {
+        File file = new File(conversation+".txt");
+
+        FileWriter fw = new FileWriter(conversation+".txt", true); //le fichier sera completé
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        bw.write(message+"\n");
+        bw.close();
+
+    }
+
+    public synchronized static void checkHistory(String user, String conversation) throws IOException {
+        String chatName = null;
+        PrintStream socOut = new PrintStream(users.get(user).getOutputStream());
+
+        //verifie si on prend un groupChat ou un privateChat
+        if(users.get(conversation) != null){
+            if(privateChats.get(user+"-"+conversation) != null) chatName = user+"-"+conversation;
+            else if(privateChats.get(conversation+"-"+user) != null)chatName = conversation+"-"+user;
+        }else{
+            chatName = conversation;
+        }
+
+        File file = new File(chatName+".txt");
+
+        if(file.exists()) {
+            String content = Files.readString(Path.of(chatName + ".txt"));
+            if (content != null) {
+                socOut.println("--------"+conversation+"--------");
+                socOut.println(content);
+            }
+        }else{
+            socOut.println("This conversation is empty");
         }
     }
+
 
     //version persistante
     public synchronized static void checkOfflineHistory(String receiver) throws IOException {
@@ -232,7 +277,12 @@ public class EchoServerMultiThreaded {
 
     //une fois que l'utilisateur se connecte son historique de messages offline est supprimé
     public synchronized static void cleanOfflineHistory(String user){
-        offlineHistory.put(user,null);
+         offlineHistory.put(user,null);
+        try {
+            saveOfflineHistory(user);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
