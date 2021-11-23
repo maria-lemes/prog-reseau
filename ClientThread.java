@@ -35,27 +35,31 @@ public class ClientThread extends Thread {
                     EchoServerMultiThreaded.getUsers().put(user, clientSocket);
                     this.user = user;
                     System.out.println("User " + user + " connected");
-                    EchoServerMultiThreaded.showHistory(user);
-                }else if(line.startsWith("<group-name:")) {
+                   if(EchoServerMultiThreaded.showOfflineHistory(user)){
+                       EchoServerMultiThreaded.cleanOfflineHistory(user);
+                   }
+                } else if (line.startsWith("<group-name:")) {
                     groupName = line.substring(13, line.length() - 1);
-                }else if(line.startsWith("<participant:")) {
+                } else if (line.startsWith("<participant:")) {
                     participants.add(line.substring(13, line.length() - 1));
-                }else if(line.startsWith("<done")){
+                } else if (line.startsWith("<done")) {
                     participants.add(this.user);
-                    EchoServerMultiThreaded.createGroup(groupName,participants);
-                }else if(line.startsWith("<send-group-message-to:")){
+                    EchoServerMultiThreaded.createGroup(groupName, participants);
+                } else if (line.startsWith("<send-group-message-to:")) {
                     group = line.substring(24, line.length() - 1);
-                }else if(line.startsWith("<group-message:")) {
-                    String message =  "Message from " + user + " at "+ group +": "+ line.substring(15, line.length() - 1);
+                } else if (line.startsWith("<group-message:")) {
+                    String message = "Message from " + user + " at " + group + ": " + line.substring(15, line.length() - 1);
                     System.out.println(message);
                     EchoServerMultiThreaded.sendGroupMessage(message, user, group);
-                }else if(line.startsWith("<recipient-name:")) {
+                } else if (line.startsWith("<recipient-name:")) {
                     recipient = line.substring(17, line.length() - 1);
-                } else if(line.startsWith("<message:")){
+                } else if (line.startsWith("<message:")) {
                     String message = "Message from " + user + ": " + line.substring(9, line.length() - 1);
                     System.out.println(message);
                     EchoServerMultiThreaded.sendPrivateMessage(message, recipient, user);
-                } else if(line.startsWith("<disconnect")) {
+                }else if(line.startsWith("<check-history-of:")){
+                    EchoServerMultiThreaded.checkHistory(user,line.substring(19, line.length() - 1));
+                }else if(line.startsWith("<disconnect")) {
                     EchoServerMultiThreaded.disconectUser(user);
                     break;
                 }

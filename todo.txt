@@ -5,4 +5,5 @@
         4- salvar o histórico em formato fichier
         5- desconectar clientes de o servidos desconecta
         6- send message to group (mostra lista dos grupos que vc faz parte)
-
+        7- affichar o historico das mensagens offline na conexao
+        8- affichar o historico completo de uma conversa

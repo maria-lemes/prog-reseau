@@ -43,6 +43,7 @@ public class ClientThreadSend
                         "\t1- Send private message\n" +
                         "\t2- Create group chat\n"+
                         "\t3- Send message to a group chat\n"+
+                        "\t4- Check message's history\n"+
                         "\t0- Exit\n");
 
                 String option = stdIn.readLine();
@@ -55,6 +56,9 @@ public class ClientThreadSend
                         break;
                     case "3":
                         groupMessage(stdIn,socOut);
+                        break;
+                    case "4":
+                        checkHistory(stdIn,socOut);
                         break;
                     case "0":
                         closeConnection(socOut);
@@ -118,6 +122,13 @@ public class ClientThreadSend
             if (".".equals(line)) break;
             socOut.println("<group-message:"+line+">");
         }
+    }
+
+    private static void checkHistory(BufferedReader stdIn,PrintStream socOut) throws IOException {
+        System.out.print("Enter conversation name");
+        String name = stdIn.readLine();
+        socOut.println("<check-history-of:"+name+">");
+
     }
 
     private void closeConnection( PrintStream socOut) throws IOException {

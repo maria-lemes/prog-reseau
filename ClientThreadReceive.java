@@ -29,9 +29,13 @@ public class ClientThreadReceive
             BufferedReader socIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             while (true) {
                 String line = socIn.readLine();
-                System.out.println(line);
+                if(line!=null) {
+                    System.out.println(line);
+                }else{
+                    System.out.println("Server stopped responding");
+                    break;
+                }
             }
-
 
         } catch (Exception e) {
             System.err.println("Error in ClientThreadReceive:" + e);
