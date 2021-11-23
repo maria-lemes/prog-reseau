@@ -50,7 +50,7 @@ public class ClientThreadController {
                     groupMessage();
                     break;
                 case "0":
-                    cts.disconnect();
+                    closeConnection();
                     return;
                 default: break;
             }
@@ -62,8 +62,7 @@ public class ClientThreadController {
     }
 
     protected synchronized void closeConnection() throws IOException {
-        cts.interrupt();
-        ctr.interrupt();
+        cts.disconnect();
         clientSocket.close();
         System.exit(0);
     }

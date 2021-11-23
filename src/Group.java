@@ -44,7 +44,7 @@ public class Group {
         return participants.removeIf(user -> user.equals(participant));
     }
 
-    public void sendMessage(String message, User sender) {
+    public synchronized void sendMessage(String message, User sender) {
         for (User u : participants) {
             if (!u.equals(sender)) {
                 u.sendMessage(sender.getUsername() + " on " + name, message);
