@@ -1,3 +1,9 @@
 1.  send message to group (mostra lista dos grupos que vc faz parte)
 2. historique des messages
 3. verificar casos null
+
+//TODO: 1- metodo para desconectar user -> seu socket na lista users tem que virar null (fechar sockets no metodo de desconectar?)
+        2- no histórico ver se o socket é null para colocar
+        3- conectar atualisa o socket na lista user e já afficha o histórico
+        4- salvar o histórico em formato fichier
+

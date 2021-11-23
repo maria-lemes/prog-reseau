@@ -19,10 +19,14 @@ public class ClientThread extends Thread {
     }
 
     public void run() {
+
+        BufferedReader socIn = null;
+        PrintStream socOut = null;
+
         try {
        
-            BufferedReader socIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintStream socOut = new PrintStream(clientSocket.getOutputStream());
+            socIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            socOut = new PrintStream(clientSocket.getOutputStream());
 
             while (true) {
                 String line = socIn.readLine();
@@ -43,19 +47,33 @@ public class ClientThread extends Thread {
                 }else if(line.startsWith("<group-message:")) {
                     String message =  "Message from " + user + " at "+ group +": "+ line.substring(15, line.length() - 1);
                     System.out.println(message);
-                    EchoServerMultiThreaded.sendGroupMessage(message, clientSocket, group);
+                    EchoServerMultiThreaded.sendGroupMessage(message, user, group);
                 }else if(line.startsWith("<recipient-name:")) {
                     recipient = line.substring(17, line.length() - 1);
                 } else if(line.startsWith("<message:")){
                     String message = "Message from " + user + ": " + line.substring(9, line.length() - 1);
                     System.out.println(message);
-                    EchoServerMultiThreaded.sendPrivateMessage(message, recipient);
+                    EchoServerMultiThreaded.sendPrivateMessage(message, recipient, user);
                 }
             
             }
             
         } catch (Exception e) {
-            System.err.println("Error in EchoServer:" + e);
+            System.err.println("Error in ClientThread:" + e);
+        }
+        finally {
+            try {
+                if (socOut != null) {
+                    socOut.close();
+                }
+                if (socIn != null) {
+                    socIn.close();
+                    clientSocket.close();
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     

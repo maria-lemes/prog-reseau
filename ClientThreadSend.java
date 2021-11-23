@@ -63,7 +63,7 @@ public class ClientThreadSend
             if (socOut != null) socOut.close();
             
         } catch (Exception e) {
-            System.err.println("Error in EchoServer:" + e);
+            System.err.println("Error in ClientThreadSend:" + e);
         }
     }
 

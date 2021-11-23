@@ -18,7 +18,8 @@ public class EchoServerMultiThreaded {
 
     public static Map<String, Socket> getUsers() { return users; }
     public static void addUser(String username, Socket socket) { users.put(username, socket); }
-    public static HashMap<String,ArrayList<Socket>> groups = new HashMap<>();
+    public static HashMap<String,ArrayList<String>> groups = new HashMap<>();
+    public static Map<String,Map<String,ArrayList<String>>> history = new HashMap<>();
 
     /**
      * main method
@@ -62,37 +63,73 @@ public class EchoServerMultiThreaded {
     }
 
     public static void createGroup(String name, ArrayList<String> usersList) {
-        ArrayList<Socket> sUsers = new ArrayList<>();
-        for(String u : usersList){
-            sUsers.add(users.get(u));
-        }
-        groups.put(name,sUsers);
+        groups.put(name,usersList);
         System.out.println("Group created : " + usersList);
         System.out.println("Groups list : " + groups);
     }
 
-    public static void sendGroupMessage(String message, Socket sender, String group){
+    public static void sendGroupMessage(String message, String sender, String group){
         System.out.println(group);
-        for (Socket s : groups.get(group)) {
-            if (!s.equals(sender)) {
-                try {
-                    PrintStream socOut = new PrintStream(s.getOutputStream());
-                    socOut.println(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if(groups.get(group) != null) {
+            for (String user : groups.get(group)) {
+                if (!user.equals(sender)) {
+                    try {
+                        PrintStream socOut = new PrintStream(users.get(user).getOutputStream());
+                        socOut.println(message);
+                        addToHistory(user, message, group);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+            }
+        } else{
+            //TODO: podemos affichar uma lista dos grupos aos quais o user pertence
+            try {
+                PrintStream socOut = new PrintStream(users.get(sender).getOutputStream());
+                socOut.println("This group doesn't exist");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
     }
 
-    public static void sendPrivateMessage(String message, String recipient){
+    public static void sendPrivateMessage(String message, String receiver, String sender){
        try{
-           PrintStream socOut = new PrintStream(users.get(recipient).getOutputStream());
-           socOut.println(message);
+           if(users.containsKey(receiver)) {
+               PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
+               socOut.println(message);
+               addToHistory(receiver, message, sender);
+           }else{
+               PrintStream socOut = new PrintStream(users.get(sender).getOutputStream());
+               socOut.println("This user doesn't exist");
+           }
        } catch (Exception e) {
            e.printStackTrace();
        }
+    }
+
+    public static void addToHistory(String receiver, String message, String conversation){
+        if(history.get(receiver) == null){
+            Map<String, ArrayList<String>> convRecord = new HashMap<>();
+            ArrayList<String> messageRecord = new ArrayList<>();
+            messageRecord.add(message);
+            convRecord.put(conversation,messageRecord);
+            history.put(receiver,convRecord);
+        }else if(history.get(receiver).get(conversation) == null){
+            ArrayList<String> messageRecord = new ArrayList<>();
+            messageRecord.add(message);
+            history.get(receiver).put(conversation,messageRecord);
+        }else{
+            history.get(receiver).get(conversation).add(message);
+        }
+
+        showHistory();
+
+    }
+
+    public static void showHistory(){
+        System.out.println("History map: " + history);
     }
 
 }
