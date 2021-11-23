@@ -15,9 +15,8 @@ import java.util.*;
 public class EchoServerMultiThreaded {
 
     private static Map<String, Socket> users = new HashMap<>();
-
     public static Map<String, Socket> getUsers() { return users; }
-    public static void addUser(String username, Socket socket) { users.put(username, socket); }
+
     public static HashMap<String,ArrayList<String>> groups = new HashMap<>();
     //history: <user,<sender,messageRecord>>
     public static Map<String,Map<String,ArrayList<String>>> offlineHistory = new HashMap<>();
@@ -37,6 +36,7 @@ public class EchoServerMultiThreaded {
         try {
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); // port
             System.out.println("Server ready...");
+            getUsersList();
 
             while (true) {
                 Socket clientSocket = listenSocket.accept();
@@ -64,9 +64,18 @@ public class EchoServerMultiThreaded {
         }
     }
 
-    public synchronized static void createGroup(String name, ArrayList<String> usersList) {
-        //TODO: verificar se user existe na criação do grupo
-        groups.put(name,usersList);
+    public synchronized static void createGroup(String name, ArrayList<String> usersList) throws IOException {
+        ArrayList participants = new ArrayList();
+        String groupCreator = usersList.get(usersList.size() - 1);
+        PrintStream socOut = new PrintStream(users.get(groupCreator).getOutputStream());
+        for(String u : usersList){
+            if(users.containsKey(u))
+                participants.add(u);
+            else{
+                socOut.println("User "+u+" doesn't exist.");
+            }
+        }
+        groups.put(name,participants);
         System.out.println("Group created : " + usersList);
         System.out.println("Groups list : " + groups);
     }
@@ -256,7 +265,7 @@ public class EchoServerMultiThreaded {
                 socOut.println(content);
             }
         }else{
-            socOut.println("This conversation is empty");
+            socOut.println("This conversation doesn't exist. Please try another name");
         }
     }
 
@@ -284,5 +293,31 @@ public class EchoServerMultiThreaded {
             e.printStackTrace();
         }
     }
+
+    //persistance de la liste d'utilisateurs crées dans le serveur
+    public synchronized static void saveUsersList(String user) throws IOException {
+        if(!users.containsKey(user)) {
+            FileWriter fw = new FileWriter("usersList.txt", true); //le fichier sera completé
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            bw.write(user + "\n");
+            bw.close();
+        }
+    }
+
+    public synchronized static void getUsersList() throws IOException {
+        File file=new File("usersList.txt");
+        FileReader fr=new FileReader(file);
+        BufferedReader br=new BufferedReader(fr);
+        String line;
+
+        while((line=br.readLine())!=null)
+        {
+            users.put(line,null);
+        }
+        fr.close();
+
+    }
+
 
 }

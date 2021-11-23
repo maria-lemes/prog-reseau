@@ -43,7 +43,7 @@ public class ClientThreadSend
                         "\t1- Send private message\n" +
                         "\t2- Create group chat\n"+
                         "\t3- Send message to a group chat\n"+
-                        "\t4- Check message's history\n"+
+                        "\t4- Check message history\n"+
                         "\t0- Exit\n");
 
                 String option = stdIn.readLine();
@@ -65,11 +65,8 @@ public class ClientThreadSend
                         return;
                     default: break;
                 }
-                //if(option.equals(".")) break;
             }
 
-            //if (stdIn != null) stdIn.close();
-            //if (socOut != null) socOut.close();
             
         } catch (Exception e) {
             System.err.println("Error in ClientThreadSend:" + e);
@@ -125,7 +122,7 @@ public class ClientThreadSend
     }
 
     private static void checkHistory(BufferedReader stdIn,PrintStream socOut) throws IOException {
-        System.out.print("Enter conversation name");
+        System.out.print("Enter user/group name");
         String name = stdIn.readLine();
         socOut.println("<check-history-of:"+name+">");
 

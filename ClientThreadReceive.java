@@ -33,6 +33,8 @@ public class ClientThreadReceive
                     System.out.println(line);
                 }else{
                     System.out.println("Server stopped responding");
+                    clientSocket.close();
+                    System.exit(0);
                     break;
                 }
             }

@@ -33,6 +33,7 @@ public class ClientThread extends Thread {
                 if (line.startsWith("<validate-user:")) {
                     String user = line.substring(15, line.length() - 1);
                     EchoServerMultiThreaded.getUsers().put(user, clientSocket);
+                    EchoServerMultiThreaded.saveUsersList(user);
                     this.user = user;
                     System.out.println("User " + user + " connected");
                    if(EchoServerMultiThreaded.showOfflineHistory(user)){

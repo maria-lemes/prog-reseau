@@ -1,9 +1,6 @@
 
-//TODO: 1- metodo para desconectar user -> seu socket na lista users tem que virar null (fechar sockets no metodo de desconectar?)
-        2- no histórico ver se o socket é null para colocar
-        3- conectar atualisa o socket na lista user e já afficha o histórico
-        4- salvar o histórico em formato fichier
-        5- desconectar clientes de o servidos desconecta
-        6- send message to group (mostra lista dos grupos que vc faz parte)
-        7- affichar o historico das mensagens offline na conexao
-        8- affichar o historico completo de uma conversa
+//TODO:
+        3-se der tempo : affichar listas de opcoes com todas as conversas groupos do usuario?
+        4- voltar p/ o menu em casos de erro
+       5- fazer legenda para pressionar .
+       6- nao colocar um usuario duas vezes na usersList
