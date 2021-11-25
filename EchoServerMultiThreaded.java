@@ -84,7 +84,7 @@ public class EchoServerMultiThreaded {
     }
 
     public synchronized static void sendGroupMessage(String message, String sender, String group) throws IOException {
-        System.out.println(group);
+        System.out.println(groups);
         if(groups.get(group) != null) {
             for (String user : groups.get(group)) {
                 if (!user.equals(sender)) {
@@ -252,8 +252,6 @@ public class EchoServerMultiThreaded {
         String chatName = null;
         PrintStream socOut = new PrintStream(users.get(user).getOutputStream());
 
-        System.out.println(conversation);
-        System.out.println(privateChats);
 
         //verifie si on prend un groupChat ou un privateChat
         if(users.containsKey(conversation)){
@@ -281,15 +279,16 @@ public class EchoServerMultiThreaded {
     //version persistante
     public synchronized static void checkOfflineHistory(String receiver) throws IOException {
         File file = new File(receiver+".txt");
+        PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
         if(file.exists()) {
             String content = Files.readString(Path.of(receiver + ".txt"));
-            PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
             if (content != null) {
                 socOut.println(content);
             } else {
                 socOut.println("You don't have new messages");
             }
         }
+        socOut.println("Enter your choice from the menu: ");
     }
 
     //une fois que l'utilisateur se connecte son historique de messages offline est supprimé
@@ -332,7 +331,11 @@ public class EchoServerMultiThreaded {
             FileWriter fw = new FileWriter("groupsList.txt", true); //le fichier sera completé
             BufferedWriter bw = new BufferedWriter(fw);
 
-            bw.write("{"+group+"="+participants+"}\n");
+            bw.write("{group:"+group+"\n");
+            for(String p: participants){
+                bw.write(p+"\n");
+            }
+            bw.write("}\n");
             bw.close();
     }
 
@@ -341,11 +344,19 @@ public class EchoServerMultiThreaded {
         FileReader fr=new FileReader(file);
         BufferedReader br=new BufferedReader(fr);
         String line;
+        String name=null;
 
         while((line=br.readLine())!=null)
         {
-            //groups.put(line,null);
+            if(line.startsWith("{group:")){
+                name =  line.substring(7, line.length()-0);
+                ArrayList<String> participants = new ArrayList<>();
+                groups.put(name,participants);
+            }else if(!line.equals("}")){
+                groups.get(name).add(line);
+            }
         }
+
         fr.close();
 
     }

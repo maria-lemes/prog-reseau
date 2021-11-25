@@ -1,6 +1,6 @@
 
 //TODO:
-        fazer lista de conversas e groupos persistente
+        fazer lista de conversas e groupos persistente OK
         checar se tudo está userFriendly e enviando as mensagens certas
         arrumar as pastas
 
