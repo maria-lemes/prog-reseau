@@ -40,26 +40,26 @@ public class ClientThread extends Thread {
                        EchoServerMultiThreaded.cleanOfflineHistory(user);
                    }
                 } else if (line.startsWith("<group-name:")) {
-                    groupName = line.substring(13, line.length() - 1);
+                    groupName = line.substring(12, line.length() - 1);
                 } else if (line.startsWith("<participant:")) {
                     participants.add(line.substring(13, line.length() - 1));
                 } else if (line.startsWith("<done")) {
                     participants.add(this.user);
                     EchoServerMultiThreaded.createGroup(groupName, participants);
                 } else if (line.startsWith("<send-group-message-to:")) {
-                    group = line.substring(24, line.length() - 1);
+                    group = line.substring(23, line.length() - 1);
                 } else if (line.startsWith("<group-message:")) {
                     String message = "Message from " + user + " at " + group + ": " + line.substring(15, line.length() - 1);
                     System.out.println(message);
                     EchoServerMultiThreaded.sendGroupMessage(message, user, group);
                 } else if (line.startsWith("<recipient-name:")) {
-                    recipient = line.substring(17, line.length() - 1);
+                    recipient = line.substring(16, line.length() - 1);
                 } else if (line.startsWith("<message:")) {
                     String message = "Message from " + user + ": " + line.substring(9, line.length() - 1);
                     System.out.println(message);
                     EchoServerMultiThreaded.sendPrivateMessage(message, recipient, user);
                 }else if(line.startsWith("<check-history-of:")){
-                    EchoServerMultiThreaded.checkHistory(user,line.substring(19, line.length() - 1));
+                    EchoServerMultiThreaded.checkHistory(user,line.substring(18, line.length() - 1));
                 }else if(line.startsWith("<disconnect")) {
                     EchoServerMultiThreaded.disconectUser(user);
                     break;

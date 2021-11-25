@@ -1,6 +1,6 @@
 
 //TODO:
-        3-se der tempo : affichar listas de opcoes com todas as conversas groupos do usuario?
-        4- voltar p/ o menu em casos de erro
-        5- fazer legenda para pressionar .
+        fazer lista de conversas e groupos persistente
+        checar se tudo está userFriendly e enviando as mensagens certas
+        arrumar as pastas
 

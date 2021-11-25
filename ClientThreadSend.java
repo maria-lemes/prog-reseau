@@ -82,9 +82,10 @@ public class ClientThreadSend
     }
 
     private static void sendMessage(BufferedReader stdIn, PrintStream socOut) throws IOException {
-            System.out.print("Enter recipient's username");
+            System.out.print("Enter recipient's username: ");
             String name = stdIn.readLine();
             socOut.println("<recipient-name:"+name+">");
+            System.out.print("Write message or tap '.' to quit:\n");
             while(true) {
                 String line = stdIn.readLine();
                 if (".".equals(line)) break;
@@ -93,12 +94,12 @@ public class ClientThreadSend
     }
 
     private static void createGroup(BufferedReader stdIn, PrintStream socOut) throws IOException {
-        System.out.print("Enter the group name");
+        System.out.print("Enter the group name: ");
         String name = stdIn.readLine();
         socOut.println("<group-name:"+name+">");
 
         while (true) {
-            System.out.print("Enter the name of a participant or 'done'\n");
+            System.out.print("Enter the name of a participant or 'done': ");
             String line = stdIn.readLine();
             if ("done".equals(line)){
                 socOut.println("<done>");
@@ -110,11 +111,13 @@ public class ClientThreadSend
     }
 
     private static void groupMessage(BufferedReader stdIn, PrintStream socOut) throws IOException {
-        System.out.print("Enter the group name");
+        System.out.print("Enter the group name: ");
         String name = stdIn.readLine();
         socOut.println("<send-group-message-to:"+name+">");
+        System.out.print("Write message or tap '.' to quit:\n");
 
         while (true) {
+
             String line = stdIn.readLine();
             if (".".equals(line)) break;
             socOut.println("<group-message:"+line+">");
@@ -122,10 +125,9 @@ public class ClientThreadSend
     }
 
     private static void checkHistory(BufferedReader stdIn,PrintStream socOut) throws IOException {
-        System.out.print("Enter user/group name");
+        System.out.print("Enter user/group name: ");
         String name = stdIn.readLine();
         socOut.println("<check-history-of:"+name+">");
-
     }
 
     private void closeConnection( PrintStream socOut) throws IOException {

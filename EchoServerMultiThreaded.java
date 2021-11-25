@@ -37,6 +37,8 @@ public class EchoServerMultiThreaded {
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); // port
             System.out.println("Server ready...");
             getUsersList();
+            getPrivateChats();
+            getGroupsList();
 
             while (true) {
                 Socket clientSocket = listenSocket.accept();
@@ -78,6 +80,7 @@ public class EchoServerMultiThreaded {
         groups.put(name,participants);
         System.out.println("Group created : " + usersList);
         System.out.println("Groups list : " + groups);
+        saveGroupsList(name,participants);
     }
 
     public synchronized static void sendGroupMessage(String message, String sender, String group) throws IOException {
@@ -138,6 +141,7 @@ public class EchoServerMultiThreaded {
                    privateChat.add(sender);
                    privateChats.put(receiver+"-"+sender,privateChat);
                    chatName = receiver+"-"+sender;
+                   savePrivateChats(chatName);
                }
                saveFullHistory(chatName,message);
            }
@@ -248,12 +252,17 @@ public class EchoServerMultiThreaded {
         String chatName = null;
         PrintStream socOut = new PrintStream(users.get(user).getOutputStream());
 
+        System.out.println(conversation);
+        System.out.println(privateChats);
+
         //verifie si on prend un groupChat ou un privateChat
-        if(users.get(conversation) != null){
-            if(privateChats.get(user+"-"+conversation) != null) chatName = user+"-"+conversation;
-            else if(privateChats.get(conversation+"-"+user) != null)chatName = conversation+"-"+user;
-        }else{
+        if(users.containsKey(conversation)){
+            if(privateChats.containsKey(user+"-"+conversation)) chatName = user+"-"+conversation;
+            else if(privateChats.containsKey(conversation+"-"+user))chatName = conversation+"-"+user;
+        }else if(groups.containsKey(conversation)){
             chatName = conversation;
+        }else{
+            socOut.println("This conversation doesn't exist. Please try another name");
         }
 
         File file = new File(chatName+".txt");
@@ -263,9 +272,8 @@ public class EchoServerMultiThreaded {
             if (content != null) {
                 socOut.println("--------"+conversation+"--------");
                 socOut.println(content);
+                socOut.println("Press '.' to go back to the menu");
             }
-        }else{
-            socOut.println("This conversation doesn't exist. Please try another name");
         }
     }
 
@@ -315,6 +323,53 @@ public class EchoServerMultiThreaded {
         {
             users.put(line,null);
         }
+        fr.close();
+
+    }
+
+    //persistance de la liste de groupes crées dans le serveur
+    public synchronized static void saveGroupsList(String group, ArrayList<String> participants) throws IOException {
+            FileWriter fw = new FileWriter("groupsList.txt", true); //le fichier sera completé
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            bw.write("{"+group+"="+participants+"}\n");
+            bw.close();
+    }
+
+    public synchronized static void getGroupsList() throws IOException {
+        File file=new File("groupsList.txt");
+        FileReader fr=new FileReader(file);
+        BufferedReader br=new BufferedReader(fr);
+        String line;
+
+        while((line=br.readLine())!=null)
+        {
+            //groups.put(line,null);
+        }
+        fr.close();
+
+    }
+
+    //persistance de la liste de conversations privées dans le serveur
+    public synchronized static void savePrivateChats(String chatName) throws IOException {
+            FileWriter fw = new FileWriter("privateChats.txt", true); //le fichier sera completé
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            bw.write(chatName + "\n");
+            bw.close();
+    }
+
+    public synchronized static void getPrivateChats() throws IOException {
+        File file=new File("privateChats.txt");
+        FileReader fr=new FileReader(file);
+        BufferedReader br=new BufferedReader(fr);
+        String line;
+
+        while((line=br.readLine())!=null)
+        {
+            privateChats.put(line,null);
+        }
+
         fr.close();
 
     }
