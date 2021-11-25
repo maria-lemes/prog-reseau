@@ -213,7 +213,7 @@ public class EchoServerMultiThreaded {
     }
 
     public synchronized static void saveOfflineHistory(String user) throws IOException {
-        File file = new File(user+".txt");
+        File file = new File("hist",user+".txt");
         String content = "Messages received while offline:\n";
         file.createNewFile();
 
@@ -228,7 +228,7 @@ public class EchoServerMultiThreaded {
         }else{
             content = "You don't have new messages";
         }
-        FileWriter fw = new FileWriter(user+".txt", false); //le fichier sera toujours réécrit
+        FileWriter fw = new FileWriter("hist/"+user+".txt", false); //le fichier sera toujours réécrit
         BufferedWriter bw = new BufferedWriter(fw);
 
         bw.write(content);
@@ -238,9 +238,9 @@ public class EchoServerMultiThreaded {
 
 
     public synchronized static void saveFullHistory(String conversation,String message) throws IOException {
-        File file = new File(conversation+".txt");
+        File file = new File("hist","hist/"+conversation+".txt");
 
-        FileWriter fw = new FileWriter(conversation+".txt", true); //le fichier sera completé
+        FileWriter fw = new FileWriter("hist/"+conversation+".txt", true); //le fichier sera completé
         BufferedWriter bw = new BufferedWriter(fw);
 
         bw.write(message+"\n");
@@ -263,10 +263,10 @@ public class EchoServerMultiThreaded {
             socOut.println("This conversation doesn't exist. Please try another name");
         }
 
-        File file = new File(chatName+".txt");
+        File file = new File("hist",chatName+".txt");
 
         if(file.exists()) {
-            String content = Files.readString(Path.of(chatName + ".txt"));
+            String content = Files.readString(Path.of("hist/"+chatName + ".txt"));
             if (content != null) {
                 socOut.println("--------"+conversation+"--------");
                 socOut.println(content);
@@ -278,10 +278,10 @@ public class EchoServerMultiThreaded {
 
     //version persistante
     public synchronized static void checkOfflineHistory(String receiver) throws IOException {
-        File file = new File(receiver+".txt");
+        File file = new File("hist",receiver+".txt");
         PrintStream socOut = new PrintStream(users.get(receiver).getOutputStream());
         if(file.exists()) {
-            String content = Files.readString(Path.of(receiver + ".txt"));
+            String content = Files.readString(Path.of("hist"+receiver + ".txt"));
             if (content != null) {
                 socOut.println(content);
             } else {
@@ -304,7 +304,7 @@ public class EchoServerMultiThreaded {
     //persistance de la liste d'utilisateurs crées dans le serveur
     public synchronized static void saveUsersList(String user) throws IOException {
         if(!users.containsKey(user)) {
-            FileWriter fw = new FileWriter("usersList.txt", true); //le fichier sera completé
+            FileWriter fw = new FileWriter("hist/usersList.txt", true); //le fichier sera completé
             BufferedWriter bw = new BufferedWriter(fw);
 
             bw.write(user + "\n");
@@ -313,7 +313,7 @@ public class EchoServerMultiThreaded {
     }
 
     public synchronized static void getUsersList() throws IOException {
-        File file=new File("usersList.txt");
+        File file=new File("hist/usersList.txt");
         FileReader fr=new FileReader(file);
         BufferedReader br=new BufferedReader(fr);
         String line;
@@ -328,7 +328,7 @@ public class EchoServerMultiThreaded {
 
     //persistance de la liste de groupes crées dans le serveur
     public synchronized static void saveGroupsList(String group, ArrayList<String> participants) throws IOException {
-            FileWriter fw = new FileWriter("groupsList.txt", true); //le fichier sera completé
+            FileWriter fw = new FileWriter("hist/groupsList.txt", true); //le fichier sera completé
             BufferedWriter bw = new BufferedWriter(fw);
 
             bw.write("{group:"+group+"\n");
@@ -340,7 +340,7 @@ public class EchoServerMultiThreaded {
     }
 
     public synchronized static void getGroupsList() throws IOException {
-        File file=new File("groupsList.txt");
+        File file=new File("hist/groupsList.txt");
         FileReader fr=new FileReader(file);
         BufferedReader br=new BufferedReader(fr);
         String line;
@@ -363,7 +363,7 @@ public class EchoServerMultiThreaded {
 
     //persistance de la liste de conversations privées dans le serveur
     public synchronized static void savePrivateChats(String chatName) throws IOException {
-            FileWriter fw = new FileWriter("privateChats.txt", true); //le fichier sera completé
+            FileWriter fw = new FileWriter("hist/privateChats.txt", true); //le fichier sera completé
             BufferedWriter bw = new BufferedWriter(fw);
 
             bw.write(chatName + "\n");
@@ -371,7 +371,7 @@ public class EchoServerMultiThreaded {
     }
 
     public synchronized static void getPrivateChats() throws IOException {
-        File file=new File("privateChats.txt");
+        File file=new File("hist/privateChats.txt");
         FileReader fr=new FileReader(file);
         BufferedReader br=new BufferedReader(fr);
         String line;
